@@ -4,11 +4,9 @@ import io.prediction.controller.PDataSource
 import io.prediction.controller.EmptyEvaluationInfo
 import io.prediction.controller.EmptyActualResult
 import io.prediction.controller.Params
-import io.prediction.data.storage.Event
 import io.prediction.data.storage.Storage
 
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 
 import grizzled.slf4j.Logger
@@ -24,19 +22,34 @@ class DataSource(val dsp: DataSourceParams)
   override
   def readTraining(sc: SparkContext): TrainingData = {
     val eventsDb = Storage.getPEvents()
-    // read all events of EVENT involving ENTITY_TYPE and TARGET_ENTITY_TYPE
-    val eventsRDD: RDD[Event] = eventsDb.find(
-      appId = dsp.appId,
-      entityType = Some("ENTITY_TYPE"),
-      eventNames = Some(List("EVENT")),
-      targetEntityType = Some(Some("TARGET_ENTITY_TYPE")))(sc)
+    val eventsRDD: RDD[Phrase] = eventsDb
+      .aggregateProperties(
+        appId = dsp.appId,
+        entityType = "phrase",
+        required = Some(List("sentenceId", "phrase", "sentiment")))(sc)
+      .map {
+        case (entityId, properties) =>
+          Phrase(
+            phraseId = entityId.toInt,
+            sentenceId = properties.get[String]("sentenceId").toInt,
+            phrase = properties.get[String]("phrase"),
+            sentiment = properties.get[String]("sentiment").toInt
+          )
+      }
 
     new TrainingData(eventsRDD)
   }
 }
 
+case class Phrase(
+  phraseId: Int,
+  sentenceId: Int,
+  phrase: String,
+  sentiment: Int
+)
+
 class TrainingData(
-  val events: RDD[Event]
+  val events: RDD[Phrase]
 ) extends Serializable {
   override def toString = {
     s"events: [${events.count()}] (${events.take(2).toList}...)"

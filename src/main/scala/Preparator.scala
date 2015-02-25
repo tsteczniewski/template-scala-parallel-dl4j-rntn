@@ -16,5 +16,5 @@ class Preparator
 }
 
 class PreparedData(
-  val events: RDD[Event]
+  val events: RDD[Phrase]
 ) extends Serializable
