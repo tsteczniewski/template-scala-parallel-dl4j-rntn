@@ -5,7 +5,7 @@ import io.prediction.controller.Engine
 
 case class Query(q: String) extends Serializable
 
-case class PredictedResult(p: String) extends Serializable
+case class PredictedResult(p: List[String]) extends Serializable
 
 object VanillaEngine extends IEngineFactory {
   def apply() = {

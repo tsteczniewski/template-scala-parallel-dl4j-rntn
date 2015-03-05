@@ -2,6 +2,11 @@
   "id": "default",
   "description": "Default settings",
   "engineFactory": "org.template.vanilla.VanillaEngine",
+  "sparkConf": {
+    "org.deeplearning4j.scaleout.perform.models.word2vec": {
+      "negative": 0
+    }
+  },
   "datasource": {
     "params" : {
       "appId": 1

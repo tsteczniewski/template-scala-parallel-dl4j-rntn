@@ -1,9 +1,6 @@
 package org.template.vanilla
 
-import io.prediction.controller.PDataSource
-import io.prediction.controller.EmptyEvaluationInfo
-import io.prediction.controller.EmptyActualResult
-import io.prediction.controller.Params
+import io.prediction.controller._
 import io.prediction.data.storage.Storage
 
 import org.apache.spark.SparkContext
@@ -22,14 +19,14 @@ class DataSource(val dsp: DataSourceParams)
   override
   def readTraining(sc: SparkContext): TrainingData = {
     val eventsDb = Storage.getPEvents()
-    val eventsRDD: RDD[Phrase] = eventsDb
+    val eventsRDD: RDD[LabeledPhrase] = eventsDb
       .aggregateProperties(
         appId = dsp.appId,
         entityType = "phrase",
         required = Some(List("sentenceId", "phrase", "sentiment")))(sc)
       .map {
         case (entityId, properties) =>
-          Phrase(
+          LabeledPhrase(
             phraseId = entityId.toInt,
             sentenceId = properties.get[String]("sentenceId").toInt,
             phrase = properties.get[String]("phrase"),
@@ -41,7 +38,7 @@ class DataSource(val dsp: DataSourceParams)
   }
 }
 
-case class Phrase(
+case class LabeledPhrase(
   phraseId: Int,
   sentenceId: Int,
   phrase: String,
@@ -49,9 +46,13 @@ case class Phrase(
 )
 
 class TrainingData(
-  val events: RDD[Phrase]
-) extends Serializable {
+  val labeledPhrases: RDD[LabeledPhrase]
+) extends Serializable with SanityCheck {
   override def toString = {
-    s"events: [${events.count()}] (${events.take(2).toList}...)"
+    s"events: [${labeledPhrases.count()}] (${labeledPhrases.take(2).toList}...)"
+  }
+
+  override def sanityCheck(): Unit = {
+    assert(labeledPhrases.count > 0)
   }
 }
