@@ -13,12 +13,14 @@ class Preparator
   def prepare(sc: SparkContext, trainingData: TrainingData): PreparedData = {
     new PreparedData(
       phrases = trainingData.labeledPhrases.map { _.phrase },
-      labeledPhrases = trainingData.labeledPhrases
+      labeledPhrases = trainingData.labeledPhrases,
+      labels = "0" :: "1" :: "2" :: "3" :: "4" :: Nil
     )
   }
 }
 
 class PreparedData(
   val phrases : RDD[String],
-  val labeledPhrases: RDD[LabeledPhrase]
+  val labeledPhrases: RDD[LabeledPhrase],
+  val labels : List[String]
 ) extends Serializable
