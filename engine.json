@@ -16,7 +16,13 @@
     {
       "name": "algo",
       "params": {
-        "mult" : 1
+        "activationFunction": "tanh",
+        "adagradResetFrequency": 1,
+        "combineClassification": true,
+        "randomFutureVectors": false,
+        "seed": 123,
+        "useTensors": false,
+        "numberOfNearestWords": 10
       }
     }
   ]

@@ -17,7 +17,15 @@ import scala.collection.JavaConversions._
 
 import grizzled.slf4j.Logger
 
-case class AlgorithmParams(mult: Int) extends Params
+case class AlgorithmParams(
+  activationFunction: String,
+  adagradResetFrequency: Integer,
+  combineClassification: Boolean,
+  randomFutureVectors: Boolean,
+  seed: Integer,
+  useTensors: Boolean,
+  numberOfNearestWords: Integer
+) extends Params
 
 class Algorithm(val ap: AlgorithmParams)
   extends P2LAlgorithm[PreparedData, Model, Query, PredictedResult] {
@@ -34,13 +42,13 @@ class Algorithm(val ap: AlgorithmParams)
       .vocabCache(vocabCache)
       .build()
     val rntn = new RNTN.Builder()
-      .setActivationFunction("tanh")
-      .setAdagradResetFrequency(1)
-      .setCombineClassification(true)
+      .setActivationFunction(ap.activationFunction)
+      .setAdagradResetFrequency(ap.adagradResetFrequency)
+      .setCombineClassification(ap.combineClassification)
       .setFeatureVectors(word2vec)
-      .setRandomFeatureVectors(false)
-      .setRng(new MersenneTwister(123))
-      .setUseTensors(false)
+      .setRandomFeatureVectors(ap.randomFutureVectors)
+      .setRng(new MersenneTwister(ap.seed))
+      .setUseTensors(ap.useTensors)
       .build()
     val listsOfTrees = data.labeledPhrases.mapPartitions(labeledPhrases => {
       val treeVectorizer = new TreeVectorizer() // it is so slow
@@ -62,7 +70,7 @@ class Algorithm(val ap: AlgorithmParams)
       .lookupTable(model.weightLookupTable)
       .vocabCache(model.vocabCache)
       .build()
-    val nearestWords = word2Vec.wordsNearest(query.content, 10)
+    val nearestWords = word2Vec.wordsNearest(query.content, ap.numberOfNearestWords)
     val trees = new TreeVectorizer().getTreesWithLabels(query.content, model.labels)
     val sentiment = model.rntn.predict(trees)
     PredictedResult(nearestWords = nearestWords.toList, sentiment = sentiment.toList)
