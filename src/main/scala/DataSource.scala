@@ -24,7 +24,7 @@ class DataSource(val dsp: DataSourceParams)
         appId = dsp.appId,
         entityType = "phrase",
         required = Some(List("sentenceId", "phrase", "sentiment")))(sc)
-      .map {
+      .map({
         case (entityId, properties) =>
           LabeledPhrase(
             phraseId = entityId.toInt,
@@ -32,7 +32,7 @@ class DataSource(val dsp: DataSourceParams)
             phrase = properties.get[String]("phrase"),
             sentiment = properties.get[String]("sentiment").toInt
           )
-      }
+      })
 
     new TrainingData(eventsRDD)
   }

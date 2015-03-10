@@ -14,7 +14,7 @@
   },
   "algorithms": [
     {
-      "name": "algo",
+      "name": "rntn",
       "params": {
         "activationFunction": "tanh",
         "adagradResetFrequency": 1,

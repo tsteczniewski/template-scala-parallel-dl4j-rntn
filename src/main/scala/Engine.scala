@@ -15,7 +15,7 @@ object VanillaEngine extends IEngineFactory {
     new Engine(
       classOf[DataSource],
       classOf[Preparator],
-      Map("algo" -> classOf[Algorithm]),
+      Map("rntn" -> classOf[Algorithm]),
       classOf[Serving])
   }
 }
