@@ -52,7 +52,8 @@ class Algorithm(val ap: AlgorithmParams)
     new Model(
       vocabCache = vocabCache,
       weightLookupTable = weightLookupTable,
-      rntn = rntn
+      rntn = rntn,
+      labels = data.labels
     )
   }
 
@@ -61,13 +62,16 @@ class Algorithm(val ap: AlgorithmParams)
       .lookupTable(model.weightLookupTable)
       .vocabCache(model.vocabCache)
       .build()
-    val nearestWords = word2Vec.wordsNearest(query.q, 10)
-    PredictedResult(p = nearestWords.toList)
+    val nearestWords = word2Vec.wordsNearest(query.content, 10)
+    val trees = new TreeVectorizer().getTreesWithLabels(query.content, model.labels)
+    val sentiment = model.rntn.predict(trees)
+    PredictedResult(nearestWords = nearestWords.toList, sentiment = sentiment.toList)
   }
 }
 
 class Model(
   val vocabCache: VocabCache,
   val weightLookupTable: WeightLookupTable,
-  val rntn: RNTN
+  val rntn: RNTN,
+  val labels: List[String]
 ) extends Serializable
