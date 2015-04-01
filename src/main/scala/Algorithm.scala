@@ -3,15 +3,13 @@ package org.template.vanilla
 import io.prediction.controller.P2LAlgorithm
 import io.prediction.controller.Params
 
-import org.apache.commons.math3.random.MersenneTwister
 import org.apache.spark.SparkContext
 
-import org.deeplearning4j.models.embeddings.WeightLookupTable
 import org.deeplearning4j.models.rntn.RNTN
-import org.deeplearning4j.models.word2vec.wordstore.VocabCache
 import org.deeplearning4j.models.word2vec.Word2Vec
 import org.deeplearning4j.spark.models.word2vec.{Word2Vec => SparkWord2Vec}
 import org.deeplearning4j.text.corpora.treeparser.TreeVectorizer
+import org.nd4j.linalg.api.rng.DefaultRandom
 
 import scala.collection.JavaConversions._
 
@@ -22,7 +20,6 @@ case class AlgorithmParams(
   adagradResetFrequency: Integer,
   combineClassification: Boolean,
   randomFutureVectors: Boolean,
-  seed: Integer,
   useTensors: Boolean,
   numberOfNearestWords: Integer
 ) extends Params
@@ -47,7 +44,7 @@ class Algorithm(val ap: AlgorithmParams)
       .setCombineClassification(ap.combineClassification)
       .setFeatureVectors(word2vec)
       .setRandomFeatureVectors(ap.randomFutureVectors)
-      .setRng(new MersenneTwister(ap.seed))
+      .setRng(new DefaultRandom())
       .setUseTensors(ap.useTensors)
       .build()
     val listsOfTrees = data.labeledPhrases.mapPartitions(labeledPhrases => {
@@ -58,28 +55,19 @@ class Algorithm(val ap: AlgorithmParams)
     val listOfTrees = listsOfTrees.reduce(_ ++ _)
     rntn.fit(listOfTrees)
     new Model(
-      vocabCache = vocabCache,
-      weightLookupTable = weightLookupTable,
       rntn = rntn,
       labels = data.labels
     )
   }
 
   def predict(model: Model, query: Query): PredictedResult = {
-    val word2Vec = new Word2Vec.Builder()
-      .lookupTable(model.weightLookupTable)
-      .vocabCache(model.vocabCache)
-      .build()
-    val nearestWords = word2Vec.wordsNearest(query.content, ap.numberOfNearestWords)
-    val trees = new TreeVectorizer().getTreesWithLabels(query.content, model.labels)
+    val trees = new TreeVectorizer().getTreesWithLabels(query.phrase, model.labels)
     val sentiment = model.rntn.predict(trees)
-    PredictedResult(nearestWords = nearestWords.toList, sentiment = sentiment.toList)
+    PredictedResult(sentiment = sentiment.toList)
   }
 }
 
 class Model(
-  val vocabCache: VocabCache,
-  val weightLookupTable: WeightLookupTable,
   val rntn: RNTN,
   val labels: List[String]
 ) extends Serializable
