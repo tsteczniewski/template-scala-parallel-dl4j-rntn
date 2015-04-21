@@ -7,7 +7,7 @@ import org.apache.spark.SparkContext
 
 import org.deeplearning4j.models.rntn.RNTN
 import org.deeplearning4j.models.word2vec.Word2Vec
-import org.deeplearning4j.spark.models.word2vec.{Word2Vec => SparkWord2Vec}
+import org.deeplearning4j.spark.models.embeddings.word2vec.{Word2Vec => SparkWord2Vec}
 import org.deeplearning4j.text.corpora.treeparser.TreeVectorizer
 import org.nd4j.linalg.api.rng.DefaultRandom
 
