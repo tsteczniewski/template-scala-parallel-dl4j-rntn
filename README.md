@@ -4,7 +4,7 @@ This template is based on [deeplearning4j RNTN example](https://github.com/Skymi
 
 Recursive Neural Tensor Network algorithm is supervised learning algorithm used to predict sentiment of sentences.
 
-As of today, deeplearning4j RNTN algorithm implementation does not work properly (eg. does not calculate gradient in gradient descent). As soon as those problems will be repaired in that library, this template will start working.
+As of today, deeplearning4j RNTN algorithm implementation does not work properly (eg. training does not finnish). [Corresponding issue](https://github.com/deeplearning4j/deeplearning4j/issues/225) in deeplearning4j library has been added.
 
 # Installation.
 
@@ -40,9 +40,7 @@ pio deploy -- --executor-memory=4GB --driver-memory=4GB
 Those pio train options are used to avoid problems with java garbage collector. In case they appear increase executor memory and driver memory.
 
 Attention!
-- pio train command won't stop as deeplearning4j RNTN fit function create a lot of threads and do not wait for them to join
-- pio train command won't train your model because deeplearning4j RNTN fit function does not calculate gradient in gradient descent algorithm
-
+- pio train command won't stop as deeplearning4j RNTN fit function does not work properly
 
 # Importing training data.
 
