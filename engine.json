@@ -9,7 +9,7 @@
   },
   "datasource": {
     "params" : {
-      "appId": 1
+      "appId": 5
     }
   },
   "algorithms": [
@@ -20,8 +20,7 @@
         "adagradResetFrequency": 1,
         "combineClassification": true,
         "randomFutureVectors": false,
-        "useTensors": false,
-        "numberOfNearestWords": 10
+        "useTensors": false
       }
     }
   ]
