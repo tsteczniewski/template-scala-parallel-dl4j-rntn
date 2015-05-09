@@ -26,7 +26,7 @@ chmod a+x setup.sh
 
 Copy this template to your local directory with:
 ```bash
-pio template get ts335793/template-scala-parallel-rntn <TemplateName>
+pio template get ts335793/template-scala-parallel-dl4j-rntn <TemplateName>
 ```
 
 # Build, train, deploy.

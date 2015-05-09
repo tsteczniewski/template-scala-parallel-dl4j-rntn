@@ -20,8 +20,7 @@ case class AlgorithmParams(
   adagradResetFrequency: Integer,
   combineClassification: Boolean,
   randomFutureVectors: Boolean,
-  useTensors: Boolean,
-  numberOfNearestWords: Integer
+  useTensors: Boolean
 ) extends Params
 
 class Algorithm(val ap: AlgorithmParams)
