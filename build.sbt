@@ -9,9 +9,9 @@ organization := "io.prediction"
 resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
-  "io.prediction"      %% "core"                % "0.9.0"   % "provided",
-  "org.apache.spark"   %% "spark-core"          % "1.2.0"   % "provided",
-  "org.apache.spark"   %% "spark-mllib"         % "1.2.0"   % "provided",
+  "io.prediction"      %% "core"                % "0.9.2"   % "provided",
+  "org.apache.spark"   %% "spark-core"          % "1.3.0"   % "provided",
+  "org.apache.spark"   %% "spark-mllib"         % "1.3.0"   % "provided",
   "org.deeplearning4j" %  "deeplearning4j-core" % "0.0.3.3.3.alpha1-SNAPSHOT",
   "org.deeplearning4j" %  "deeplearning4j-nlp"  % "0.0.3.3.3.alpha1-SNAPSHOT",
   "org.deeplearning4j" %  "dl4j-spark"          % "0.0.3.3.3.alpha1-SNAPSHOT"
