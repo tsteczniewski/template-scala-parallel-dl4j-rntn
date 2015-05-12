@@ -16,7 +16,7 @@ chmod a+x setup.sh
 In order to use Deeplearning4j in your template you must add it along with libraries it depends on to dependencies in your build.sbt.
 ```scala
 libraryDependencies ++= Seq(
-  "io.prediction"      %% "core"                % "0.9.2"   % "provided",
+  "io.prediction"      %% "core"                % pioVersion.value   % "provided",
   "org.apache.spark"   %% "spark-core"          % "1.3.0"   % "provided",
   "org.apache.spark"   %% "spark-mllib"         % "1.3.0"   % "provided",
   "org.deeplearning4j" %  "deeplearning4j-core" % "0.0.3.3.3.alpha1-SNAPSHOT", // ADDED
@@ -93,7 +93,7 @@ Deeplearning4j spark Word2Vec requires setting "negative" option to zero in spar
   },
   "datasource": {
     "params" : {
-      "appId": 1
+      "appName": "MyAppName"
     }
   },
   "algorithms": [
@@ -154,10 +154,9 @@ class DataSource(val dsp: DataSourceParams)
   // CHANGED
   override
   def readTraining(sc: SparkContext): TrainingData = {
-    val eventsDb = Storage.getPEvents()
-    val eventsRDD: RDD[LabeledPhrase] = eventsDb
+    val eventsRDD: RDD[LabeledPhrase] = PEventStore
       .aggregateProperties(
-        appId = dsp.appId,
+        appName = dsp.appName,
         entityType = "phrase",
         required = Some(List("sentenceId", "phrase", "sentiment")))(sc)
       .map({
