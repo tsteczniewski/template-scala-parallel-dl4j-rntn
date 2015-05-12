@@ -1,14 +1,14 @@
 package org.template.vanilla
 
 import io.prediction.controller._
-import io.prediction.data.storage.Storage
+import io.prediction.data.store.PEventStore
 
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
 import grizzled.slf4j.Logger
 
-case class DataSourceParams(appId: Int) extends Params
+case class DataSourceParams(appName: String) extends Params
 
 class DataSource(val dsp: DataSourceParams)
   extends PDataSource[TrainingData,
@@ -18,10 +18,9 @@ class DataSource(val dsp: DataSourceParams)
 
   override
   def readTraining(sc: SparkContext): TrainingData = {
-    val eventsDb = Storage.getPEvents()
-    val eventsRDD: RDD[LabeledPhrase] = eventsDb
+    val eventsRDD: RDD[LabeledPhrase] = PEventStore
       .aggregateProperties(
-        appId = dsp.appId,
+        appName = dsp.appName,
         entityType = "phrase",
         required = Some(List("sentenceId", "phrase", "sentiment")))(sc)
       .map({

@@ -9,7 +9,7 @@
   },
   "datasource": {
     "params" : {
-      "appId": 5
+      "appName": "MyAppName"
     }
   },
   "algorithms": [
